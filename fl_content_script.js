@@ -184,8 +184,6 @@ fl_ContentScript.prototype.startTimer = function()
 
 var blockedSites = ['facebook.com', 'reddit.com'];
 
-//lol
-
 for (var s=0; s < blockedSites.length; s++)
 {
 	if(window.location.toString().indexOf(blockedSites[s]) != -1)
