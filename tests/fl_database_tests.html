@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <link rel="stylesheet" href="http://github.com/jquery/qunit/raw/master/qunit/qunit.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="http://github.com/jquery/qunit/raw/master/qunit/qunit.js"></script>
+    <script type="text/javascript" src="../fl_database.js"></script>
+    <script>
+    $(document).ready(function(){
+        
+        function clearLocalStorage() 
+        {
+            localStorage.clear();
+        }
+            
+        test("Test localStorage[getNumberOfOpenTabs] is undefined  at launch", function() {
+            equal(localStorage["getNumberOfOpenTabs"], undefined);
+            clearLocalStorage();
+        });
+        
+        test("Test setNumberOfOpenTabs", function() {
+            var database = new fl_Database();
+            
+            database.setNumberOfOpenTabs(2);
+            equal(database.getNumberOfOpenTabs(), 2);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test initNumberOfOpenTabs sets numberOfOpenTabs to zero", function() {
+            var database = new fl_Database();
+            
+            database.initNumberOfOpenTabs();
+            equal(database.getNumberOfOpenTabs(), 0);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test getNumberOfOpenTabs is zero at launch", function() {
+            var database = new fl_Database();
+            equal(database.getNumberOfOpenTabs(), 0);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test getNumberOfVisitsToday is zero at launch", function() {
+            var database = new fl_Database();
+            equal(database.getNumberOfVisitsToday(), 0);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test isFirstVisitOfTheDay is true on first visit", function() {
+            var database = new fl_Database();
+            
+            equal(database.isFirstVisitOfTheDay(new Date()), true);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test isFirstVisitOfTheDay is false on second visit during the same day", function() {
+            var database = new fl_Database();
+            database.setLastVisit(new Date());
+            
+            equal(database.isFirstVisitOfTheDay(new Date()), false);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test isFirstVisitOfTheDay is true on first visit during the next day", function() {
+            var database = new fl_Database();
+            database.setLastVisit(new Date(2010, 10, 1, 0, 0, 0, 0));
+            
+            equal(database.isFirstVisitOfTheDay(new Date(2010, 10, 2, 0, 0, 0, 0)), true);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test setNumberOfVisitsToday", function() {
+            var database = new fl_Database();
+            
+            database.setNumberOfVisitsToday(2);
+            equal(database.getNumberOfVisitsToday(), 2);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test change users changes numberOfOpenTabs", function() {
+            var database = new fl_Database();
+            database.setUserID(3);
+            database.setNumberOfOpenTabs(2);
+            
+            equal(database.getNumberOfOpenTabs(), 2);
+            
+            database.setUserID(4);
+            equal(database.getNumberOfOpenTabs(), 0);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test that changing users back and forth retains settings", function() 
+        {
+            var database = new fl_Database();
+            database.setUserID(3);
+            database.setNumberOfOpenTabs(2);
+            equal(database.getNumberOfOpenTabs(), 2);
+            database.setUserID(4);   
+            equal(database.getNumberOfOpenTabs(), 0);
+            database.setUserID(3);
+            equal(database.getNumberOfOpenTabs(), 2);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test that settings retain between instances", function() 
+        {
+            var database = new fl_Database();
+            database.setUserID(3);
+            database.setNumberOfOpenTabs(2);
+            equal(database.getNumberOfOpenTabs(), 2);
+           
+            var database2 = new fl_Database();
+            database2.setUserID(3);
+            equal(database2.getNumberOfOpenTabs(), 2);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test that database setNumberOfOpenTabs to zero for all users", function()
+        {
+            var database = new fl_Database();
+            database.setUserID("3");
+            database.setNumberOfOpenTabs(2);
+            
+            database.setUserID("4");
+            database.setNumberOfOpenTabs(3);
+            
+            database.setNumberOfTabsToZeroForAllUsers();
+            
+            //database = new fl_Database();
+            database.setUserID("3");
+            equal(database.getNumberOfOpenTabs(), 0, "UserID 3");
+            
+           //database = new fl_Database();
+            database.setUserID("4");
+            equal(database.getNumberOfOpenTabs(), 0, "UserID 4");
+            
+            clearLocalStorage();
+        });
+        
+        test("Test resetting the extension for a single user", function()
+        {
+            var database = new fl_Database();
+            database.setUserID("3");
+            database.setNumberOfVisitsToday(3);
+            database.setRemainingSeconds(100);
+            
+            database.resetExtensionForCurrentUser();
+
+            equals(database.getNumberOfVisitsToday(), 0);
+            equals(database.getRemainingSeconds(), database.getMaxAllowedSecondsPerDay());
+            
+            clearLocalStorage();
+        });
+        
+        test("Test resetting the extension for all users", function()
+        {
+            var database = new fl_Database();
+            database.setUserID("3");
+            database.setNumberOfVisitsToday(2);
+            
+            database.setUserID("4");
+            database.setNumberOfVisitsToday(3);
+            
+            database.resetExtensionForAllUsers();
+            
+            database.setUserID("3");
+            equals(database.getNumberOfVisitsToday(), 0);
+            
+            database.setUserID("4");
+            equals(database.getNumberOfVisitsToday(), 0);
+            
+            clearLocalStorage();
+        });
+        
+        test("Test resetting the extension for all users retains the current user", function()
+        {
+            var database = new fl_Database();
+            database.setUserID("3"); 
+            database.setUserID("4");
+            database.setUserID("3");
+            
+            database.resetExtensionForAllUsers();
+            
+            equals(database.userID, "3");
+            
+            clearLocalStorage();
+        });
+        
+        test("Test storing a new userID", function()
+        {
+            var database = new fl_Database();
+            database.storeUserID("3");
+            
+            equals(database.getAllUserIDs()[0], "3");
+            
+            clearLocalStorage();
+        });
+    });
+    </script>
+    
+</head>
+<body>
+    <h1 id="qunit-header">fl_Database tests</h1>
+    <h2 id="qunit-banner"></h2>
+    <div id="qunit-testrunner-toolbar"></div>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture">test markup, will be hidden</div>
+</body>
+</html>

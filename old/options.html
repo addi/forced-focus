@@ -1,0 +1,100 @@
+<html>
+    <head>
+        <title>Facebook Limiter Options</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <link rel="stylesheet" href="facebook-limiter.css" type="text/css" charset="utf-8">
+        
+        <script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+        <script type="text/javascript" src="fl_database.js"></script>
+        <script type="text/javascript"> 
+            
+        $(function()
+        {
+            var database = new fl_Database();
+            
+            $(".time-limit").attr('checked', database.shouldLimitTime());
+            $(".number-of-visits").attr('checked', database.shouldLimitVisits());
+            $(".max-visits").attr("value", database.getMaxAllowedVisitsPerDay());
+            $(".max-seconds").attr("value", database.getMaxAllowedSecondsPerDay());
+
+            $(".time-limit").click(function(event)
+            {
+                database.setShouldLimitTime($(this).is(':checked'));
+            });
+            
+            $(".number-of-visits").click(function(event)
+            {
+                database.setShouldLimitVisits($(this).is(':checked'));
+            });
+            
+            $(".reset").click(function(event)
+            {
+                database.resetExtensionForAllUsers();
+                database.setNumberOfTabsToZeroForAllUsers();
+            });
+            
+            $(".max-visits").blur(function(event)
+            {
+                database.setMaxAllowedVisitsPerDay($(this).val());
+            });
+            
+            $(".max-seconds").blur(function(event)
+            {
+                database.setMaxAllowedSecondsPerDay($(this).val());
+            });
+        });
+        </script>
+    </head>
+    <body class="fl fl_options">
+        <div class="fl_heading">
+        <div class="fl_container">
+            <h1>Facebook Limiter Options</h1>
+        </div>
+        </div>
+        <div class="fl_container">
+        
+        <div class="fl_forms fl_box">
+            <form>
+                <fieldset>
+                    <legend>Types of limit</legend>
+                    <ul>
+                        <li><input type="checkbox" class="time-limit"/>Time limit</li>
+                        <li><input type="checkbox" class="number-of-visits" />Number of visits</li>
+                    </ul>
+                </fieldset>
+            </form>
+            
+            <form>
+                <fieldset>
+                    <legend>Max seconds per day</legend>
+                    <div>
+                        <input type="text" class="max-seconds" />
+                    </div>
+                </fieldset>
+            </form>
+            
+            <form>
+                <fieldset>
+                    <legend>Max visits per day</legend>
+                    <div>
+                        <input type="text" class="max-visits" />
+                    </div>
+                </fieldset>
+            </form>
+            
+            <form>
+                <fieldset>
+                    <legend>Reset the limiter for all users</legend>
+                    <div>
+                        <input type="button" value="Reset" class="reset" />
+                    </div>
+                </fieldset>
+
+            </form>
+        </div>
+        <div class="fl_copyright">
+            Jóhann Þ. Bergþórsson 2010
+        </div>
+        </div>
+    </body>
+</html>

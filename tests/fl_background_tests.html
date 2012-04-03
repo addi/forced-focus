@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <link rel="stylesheet" href="http://github.com/jquery/qunit/raw/master/qunit/qunit.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="http://github.com/jquery/qunit/raw/master/qunit/qunit.js"></script>
+    <script type="text/javascript" src="../fl_database.js"></script>
+    <script type="text/javascript" src="../fl_background.js"></script>
+    <script>
+    $(document).ready(function(){
+        
+        function clearLocalStorage() 
+        {
+            localStorage.clear();
+        }
+            
+        test("Test markVisit increments numberOfVisits if openTabs is zero", function() {
+            var database = new fl_Database();
+            database.setNumberOfOpenTabs(0);
+            
+            var backgroundWorker = new fl_Background(database);
+            backgroundWorker.markVisit();
+            equal(database.getNumberOfVisitsToday(), 1);
+
+            clearLocalStorage();
+        });
+        
+        test("Test markVisit doesn't increment numberOfVisits if openTabs is greater than zero", function() {
+            var database = new fl_Database();
+            database.setNumberOfOpenTabs(1);
+            
+            var backgroundWorker = new fl_Background(database);
+            backgroundWorker.markVisit();
+            equal(database.getNumberOfVisitsToday(), 0);
+
+            clearLocalStorage();
+        });
+        
+        test("Test markVisit does increment number of open tabs", function() {
+            var database = new fl_Database();            
+            var backgroundWorker = new fl_Background(database);
+            backgroundWorker.markVisit();
+            equal(database.getNumberOfOpenTabs(), 1);
+            
+            backgroundWorker.markVisit();
+            equal(database.getNumberOfOpenTabs(), 2);
+
+            clearLocalStorage();
+        });
+        
+        test("Test that number of tabs is zero after visit and closed tab", function() {
+            var database = new fl_Database();            
+            var backgroundWorker = new fl_Background(database);
+            backgroundWorker.markVisit();
+            equal(database.getNumberOfOpenTabs(), 1);
+            backgroundWorker.tabWasClosed();
+            equal(database.getNumberOfOpenTabs(), 0);
+
+            clearLocalStorage();
+        });
+        
+        test("Test that remainingSeconds is decremented if number of tabs is greater than zero", function() {
+            var database = new fl_Database(); 
+            database.setUserID(2);
+            database.setNumberOfOpenTabs(2);
+            database.setRemainingSeconds(100);
+            var backgroundWorker = new fl_Background(database);
+            backgroundWorker.onTimerTick();
+            equal(database.getRemainingSeconds(), 100 - backgroundWorker.CHECK_INTERVAL);
+
+            clearLocalStorage();
+        });
+        
+        test("Test that remainingSeconds isn't decremented if number of tabs is zero", function() {
+            var database = new fl_Database();        
+            database.setNumberOfOpenTabs(0);
+            database.setRemainingSeconds(100);
+            var backgroundWorker = new fl_Background(database);
+            backgroundWorker.onTimerTick();
+            equal(database.getRemainingSeconds(), 100);
+
+            clearLocalStorage();
+        });
+        
+        test("Test that backgroundWorker resets extension on first visit", function() {
+            var database = new fl_Database(); 
+            database.setUserID("3");
+            var currentDate = new Date();
+            
+            database.setLastVisit(new Date(currentDate.getFullYear() - 1, 1, 1, 0, 0, 0, 0));
+            database.setNumberOfOpenTabs(0);
+            database.setRemainingSeconds(database.getMaxAllowedSecondsPerDay() - 1);            
+            var backgroundWorker = new fl_Background(database);
+            backgroundWorker.sendResponse = function(response) {};
+            
+            var request = function() {};
+            request.method = "postUserID";
+            request.userID = "3"
+            
+            backgroundWorker.onRequest(request, null);
+            equal(database.getRemainingSeconds(), database.getMaxAllowedSecondsPerDay());
+            equal(database.getNumberOfVisitsToday(), 1);
+            equal(database.getNumberOfOpenTabs(), 1);
+
+            clearLocalStorage();
+        });
+        
+        test("Test that backgroundWorker doesn't reset the extension on second visit", function() {
+            var database = new fl_Database(); 
+            database.setUserID("3");
+            database.setLastVisit(new Date());
+            database.setNumberOfVisitsToday(1);
+            database.setNumberOfOpenTabs(0);
+            database.setRemainingSeconds(100);            
+            var backgroundWorker = new fl_Background(database);
+            
+            var request = function() {};
+            request.method = "postUserID";
+            request.userID = "3"
+            
+            backgroundWorker.onRequest(request, null);
+            equal(database.getRemainingSeconds(), 100);
+            equal(database.getNumberOfVisitsToday(), 2);
+            equal(database.getNumberOfOpenTabs(), 1);
+
+            clearLocalStorage();
+        });
+        
+        test("Test that numberOfVisits is incremented on second visit", function()
+        {
+            var database = new fl_Database(); 
+            database.setUserID("2");
+            database.setLastVisit(new Date());
+            database.setNumberOfVisitsToday(1);
+            database.setNumberOfOpenTabs(0);
+            database.setRemainingSeconds(100);     
+            
+            database = new fl_Database();
+            var backgroundWorker = new fl_Background(database);
+            
+            var message = function() {};
+            message.method = "postUserID";
+            message.userID = "2";
+            
+            backgroundWorker.onRequest(message, null);
+            equal(database.getRemainingSeconds(), 100);
+            equal(database.getNumberOfVisitsToday(), 2);
+            equal(database.getNumberOfOpenTabs(), 1);
+
+            clearLocalStorage();
+        });
+    });
+    </script>
+    
+</head>
+<body>
+    <h1 id="qunit-header">fl_Database tests</h1>
+    <h2 id="qunit-banner"></h2>
+    <div id="qunit-testrunner-toolbar"></div>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture">test markup, will be hidden</div>
+</body>
+</html>

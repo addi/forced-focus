@@ -1,0 +1,13 @@
+<html>
+<head>
+<script type="text/javascript" src="fl_database.js"></script>
+<script type="text/javascript" src="fl_background.js"></script>
+<script type="text/javascript">
+var database = new fl_Database();
+database.setNumberOfTabsToZeroForAllUsers();
+var backgroundWorker = new fl_Background(database);
+backgroundWorker.addExtensionsListener();
+backgroundWorker.startTimer();
+</script>
+</head>
+</html>
