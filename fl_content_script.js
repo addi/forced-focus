@@ -182,7 +182,7 @@ fl_ContentScript.prototype.startTimer = function()
 // console.log(window.location.indexOf("facebook.com"));
 
 
-var blockedSites = ['facebook.com', 'reddit.com'];
+var blockedSites = ['facebook.com', 'reddit.com', 'google.com/reader', 'mbl.is', 'visir.is', 'twitter.com'];
 
 for (var s=0; s < blockedSites.length; s++)
 {
