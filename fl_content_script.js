@@ -188,7 +188,7 @@ for (var s=0; s < blockedSites.length; s++)
 {
 	if(window.location.toString().indexOf(blockedSites[s]) != -1)
 	{
-		window.location = "https://workflowy.com/";
+		window.location = "https://trello.com/";
 		break;
 	}
 }
