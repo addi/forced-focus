@@ -7,6 +7,10 @@
    "description": "Blocks facebook and reddit, redirects the user to workflowy.com",
    "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnODdcC9Tfzqx26leT4v9PByC3akt68aYJo6xmH6RpoLY8KXYs7R0vfvxqbel59jrJTOZQMF+iqKYFQZkw0/aIhUcDvigVJu2DZNUmyK8mMXPkSdK8bSUE606j85b2CBhHJIHkiO9CtOR8qwugyE1glpnnistiqUl5ngryfltXUQIDAQAB",
    "name": "Brillblock",
+   "options_page": "options.html",
+   "permissions":[
+      "storage"
+   ],
    "update_url": "http://clients2.google.com/service/update2/crx",
    "version": "1",
    "manifest_version": 2
