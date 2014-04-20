@@ -4,14 +4,18 @@
       "matches": [ "http://*/*", "https://*/*" ],
       "run_at": "document_start"
    } ],
-   "description": "Blocks facebook and reddit, redirects the user to workflowy.com",
-   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnODdcC9Tfzqx26leT4v9PByC3akt68aYJo6xmH6RpoLY8KXYs7R0vfvxqbel59jrJTOZQMF+iqKYFQZkw0/aIhUcDvigVJu2DZNUmyK8mMXPkSdK8bSUE606j85b2CBhHJIHkiO9CtOR8qwugyE1glpnnistiqUl5ngryfltXUQIDAQAB",
-   "name": "Brillblock",
+   "description": "A simple Chrome extension that blocks unwanted websites and and redirects the user to a website of his choice.",
+   "name": "Forced Focus",
    "options_page": "options.html",
    "permissions":[
       "storage"
    ],
-   "update_url": "http://clients2.google.com/service/update2/crx",
-   "version": "1",
+   "icons": { 
+      "16": "icon-16.png",
+      "48": "icon-48.png",
+      "128": "icon-128.png",
+      "256": "icon-256.png" 
+   },
+   "version": "1.0",
    "manifest_version": 2
 }

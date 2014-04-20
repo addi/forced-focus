@@ -2,7 +2,7 @@ function addUrl(value)
 {
 	var newUrlDiv = $(document.createElement('div'));
 
-	newUrlDiv.after().html('<label>Url : <input class="url_textbox" type="textbox" value="'+value+'"></label> <button class="url_delete">Delete</button>');
+	newUrlDiv.after().html('<label>Url : <input class="url_textbox" type="text" size="40" value="'+value+'"></label> <button class="url_delete">Delete</button>');
 
 	newUrlDiv.appendTo("#text_box_group");
 
@@ -56,7 +56,11 @@ function save_options()
 		chrome.storage.sync.set(
 		{
     		redirect_url: redirect_url
-  		});
+  		},
+  		function()
+  		{
+  			$("#saved_status").text("Saved!")
+        });
 	};
 }
 
@@ -67,7 +71,7 @@ function restore_options()
   // Use default value color = 'red' and likesColor = true.
   chrome.storage.sync.get({
     urls: new Array(),
-    redirect_url: "http://www.arnij.com"
+    redirect_url: "http://www.forcedfocus.com/focus"
 
   }, function(items)
   {
